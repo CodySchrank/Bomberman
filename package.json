@@ -1,0 +1,9 @@
+{
+	"name": "Bomber_Man",
+	"description": "Multiplayer bomber man with socket.io",
+	"dependencies": {
+		"express": "*",
+		"socket.io": "*",
+		"mongoose": "*"
+	}
+}
