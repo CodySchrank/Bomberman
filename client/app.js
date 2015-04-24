@@ -102,7 +102,12 @@ function game(){
 
 	var CollisionInArrayForExplosion = function(a,b,c){
 		var taken = [];
-		//LEFT1
+		/*
+			------------- DUMBASS ALERT --------------
+			LEFT1 AND LEFT2 IS ACTUALLY TO THE RIGHT,
+			RIGHT1 AND RIGHT2 IS ACTUALLY TO THE LEFT..
+			CODED IN OTHER PLACES THE WRONG WAY SO DONT CHANGE
+		*/
 		for(var d in b){
 			if(AABBIntersect(a.cx + pixels,a.cy,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch)){
 				taken.push("LEFT1");
@@ -165,42 +170,34 @@ function game(){
 			for (var d in b){
 				if(AABBIntersect(a[c].cx + pixels,a[c].cy,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('LEFT1') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 				if(AABBIntersect(a[c].cx + pixels + pixels,a[c].cy,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('LEFT1') === -1 && v.indexOf('LEFT2') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 				if(AABBIntersect(a[c].cx - pixels,a[c].cy,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('RIGHT1') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 				if(AABBIntersect(a[c].cx - pixels - pixels,a[c].cy,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('RIGHT1') === -1 && v.indexOf('RIGHT2') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 				if(AABBIntersect(a[c].cx,a[c].cy + pixels,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('DOWN1') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 				if(AABBIntersect(a[c].cx,a[c].cy + pixels + pixels,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('DOWN1') === -1 && v.indexOf('DOWN2') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 				if(AABBIntersect(a[c].cx,a[c].cy - pixels,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('UP1') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 				if(AABBIntersect(a[c].cx,a[c].cy - pixels - pixels,a[c].cw,a[c].ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('UP1') === -1 && v.indexOf('UP2') === -1){
 					b[d].explode = true;
-					console.log(a,b,v);
 					return;
 				}
 			}
@@ -211,39 +208,43 @@ function game(){
 		a.cx = a.x;
 		a.cy = a.y - 1;
 		for (var d in b){
+			// console.log(JSON.parse(JSON.stringify(a)));
+			// console.log(JSON.parse(JSON.stringify(b)));
+			// console.log(JSON.parse(JSON.stringify(v)));
 			if(AABBIntersect(a.cx,a.cy,a.ch,a.cw,b[d].cx,b[d].cy,b[d].cw,b[d].ch)){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx + pixels,a.cy,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('RIGHT1') === -1){
+			if(AABBIntersect(a.cx + 20 + pixels,a.cy + 20,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('RIGHT1') === -1){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx + pixels + pixels,a.cy,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('RIGHT1') === -1 && v.indexOf('RIGHT2') === -1){
+			if(AABBIntersect(a.cx + 20 + pixels + pixels,a.cy + 20,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('RIGHT1') === -1 && v.indexOf('RIGHT2') === -1){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx - pixels,a.cy,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('LEFT1') === -1){
+			if(AABBIntersect(a.cx + 20 - pixels,a.cy + 20,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('LEFT1') === -1){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx - pixels - pixels,a.cy,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('LEFT1') === -1 && v.indexOf('LEFT2') === -1){
+			if(AABBIntersect(a.cx + 20 - pixels - pixels,a.cy + 20,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('LEFT1') === -1 && v.indexOf('LEFT2') === -1){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx,a.cy + pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('UP1') === -1){
+			if(AABBIntersect(a.cx + 20,a.cy - 20 + pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('UP1') === -1){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx,a.cy + pixels + pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('UP1') === -1 && v.indexOf('UP2') === -1){
+			if(AABBIntersect(a.cx + 20,a.cy + pixels + pixels,a.cw,a.ch * 2,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf("UP1") === -1 && v.indexOf('UP2') === -1){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx,a.cy - pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('DOWN1') === -1){
+			if(AABBIntersect(a.cx + 20,a.cy - 20 - pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('DOWN1') === -1){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx,a.cy - pixels - pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('DOWN1') === -1 && v.indexOf('DOWN2') === -1){
+			if(AABBIntersect(a.cx + 20,a.cy - pixels - pixels,a.cw,a.ch * 2,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf("DOWN1") === -1 && v.indexOf('DOWN2') === -1){
+				console.log("HERE",a,b,v);
 				player.life--;
 				break;
 			}
@@ -251,7 +252,32 @@ function game(){
 	};
 
 	var CollisionInArrayForWall = function(a,b,v){
+		for(var d in b){
+			// LEFT IS RIGHT AND RIGHT IS LEFT...
+			if(v.indexOf("LEFT1") !== -1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx - pixels,b[d].cy,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			} else if(v.indexOf("LEFT1") == -1 && v.indexOf('LEFT2') !== -1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx - pixels - pixels,b[d].cy,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			} 
 
+			if(v.indexOf("RIGHT1") !== -1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx + pixels,b[d].cy,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			} else if(v.indexOf("RIGHT1") == -1 && v.indexOf('RIGHT2') !==-1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx + pixels + pixels,b[d].cy,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			}
+
+			if(v.indexOf("UP1") !== -1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx,b[d].cy + pixels,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			} else if(v.indexOf("UP1") == -1 && v.indexOf('UP2') !==-1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx,b[d].cy + pixels + pixels,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			}
+
+			if(v.indexOf("DOWN1") !== -1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx,b[d].cy - pixels,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			} else if(v.indexOf("DOWN1") == -1 && v.indexOf('DOWN2') !==-1 && AABBIntersect(a.cx,a.cy,a.cw,a.ch,b[d].cx,b[d].cy - pixels - pixels,b[d].cw,b[d].ch)){
+				b[d].destroy(b[d]);
+			}
+		}
 	};
 
 	function Block(x,y,src,xtra){
@@ -272,6 +298,8 @@ function game(){
 
 	var wallIMG = new Image();
 	wallIMG.src = 'img/wall.png';
+	var blownwallIMG =  new Image();
+	blownwallIMG.src = 'img/blownwall.png';
 	function Wall(x,y){
 		this.x = x;
 		this.y = y;
@@ -281,6 +309,7 @@ function game(){
 		this.ch = pixels;
 		this.cx = this.x;
 		this.cy = this.y;
+		var self = this;
 
 		this.draw = function(){
 			var x = this.x;
@@ -288,6 +317,23 @@ function game(){
 			var width = this.width;
 			var height = this.height;
 			gameCtx.drawImage(wallIMG,x,y,width,height);
+		};
+
+		this.destroy = function(id){
+			var x = this.x;
+			var y = this.y;
+			var width = this.width;
+			var height = this.height;
+			setTimeout(function(){
+				if(id.x === x && id.y === y){
+					gameCtx.drawImage(blownwallIMG,x,y,width,height);
+				}
+			},200);
+			setTimeout(function(){
+				if(id.x === x && id.y === y){
+					delete walls[walls.indexOf(self)];
+				}
+			},650);
 		};
 	}
 
@@ -443,7 +489,8 @@ function game(){
 				caseN++;
 				taken = CollisionInArrayForExplosion(this,map,walls);
 				CollisionInArrayForArray(bombs,bombs,taken);
-				// CollisionInArrayForDeath(player,bombs,taken);
+				CollisionInArrayForDeath(player,bombs,taken);
+				CollisionInArrayForWall(this,walls,taken);
 			}
 			//BASE
 			switch(caseN){
@@ -603,7 +650,7 @@ function game(){
 			if(this.timer < 0 || this.explode){
 				if(first){
 					explosion = new Explosion(Math.floor(ax / pixels) * pixels,Math.floor(ay / pixels) * pixels,'img/explosion.png');
-					this.timer = 0;
+					this.timer = -1;
 				}
 				explosion.draw();
 				first = false;
@@ -615,16 +662,17 @@ function game(){
 		if(lastbombcreated < 0){
 			var bomb = new Bomb(player,'img/bomb1.png');
 			bombs.push(bomb);
-			lastbombcreated = 20;
+			lastbombcreated = 160;
 		}
 	}
 
-	function createWalls(n){
+	function createWalls(n,player,startingWalls){
 		for(var i = 0; i < n; i++){
 			for(var block in world){
-				var x = Math.floor(Math.random() * cols);
-				var y = Math.floor(Math.random() * rows);
-				if(world.world[x + (y * cols)] === 2){
+				var x = Math.floor(Math.random() * rows);
+				var y = Math.floor(Math.random() * cols);
+				if(
+					world.world[x + (y * cols)] === 2 && (x * pixels !== player.x || y * pixels !== player.y + 20) && (x * pixels !== player.x + pixels || y * pixels !== player.y + 20) && (x * pixels !== player.x - pixels || y * pixels !== player.y + 20) && (y * pixels !== player.y + pixels + 20 || x * pixels !== player.x) && (y * pixels !== player.y - pixels + 20 || x * pixels !== player.x)){
 					var wall = new Wall(x*pixels,y*pixels);
 					walls.push(wall);
 				}
@@ -715,9 +763,15 @@ function game(){
 		lastbombcreated = 0;
 		world = new World();
 		world.draw();
-		player = new Player(4 * pixels,2 * pixels,'img/block.png',DOWN);
+		player = new Player(14 * pixels,11 * pixels + 20,'img/block.png',DOWN);
 		player.draw();
-		createWalls(40);
+		startingWalls = [
+			{x: 3,y: 2},
+			{x: 2,y: 3},
+			{x: 2,y: 11},
+			{x: 3,y: 12}
+		];
+		// createWalls(100,player,startingWalls);
 	}
 
 	function ObjectLength(object) {
@@ -743,12 +797,6 @@ function game(){
 
 		if(frames % 2 === 0){
 			draw();
-			
-			for(var bomb in bombs){
-				if(bombs[bomb].timer < -13){
-					bombs.splice(bomb,1);
-				}
-			}
 		}
 	}
 
@@ -759,6 +807,11 @@ function game(){
 		}
 		for(var bomb in bombs){
 			bombs[bomb].draw();
+		}
+		for(var a in bombs){
+			if(bombs[a].timer < -13){
+				delete bombs[a];
+			}
 		}
 		player.draw();
 	}
