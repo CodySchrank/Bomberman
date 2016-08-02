@@ -1,20 +1,65 @@
 var bomberMan = angular.module('bomberMan',['LocalStorageModule']);
 
+// bomberMan.$$socket = io.connect();
+
 bomberMan.controller('gameController',function($scope, localStorageService){
+	var name;
 	if(!localStorageService.get('name')){
-		var name = prompt('Please Enter Your Name');
+		name = prompt('Please Enter Your Name');
 		if(!name){
 			name = "Anonymous";
 		}
 		localStorageService.set('name',name);
 	}
+	name = localStorageService.get('name');
+
+	// bomberMan.$$socket.emit('newUser',name);
+
+	// bomberMan.$$socket.on('init',function(place){
+	// 	console.log("Player: ", place);
+	// 	var initial = {};
+	// 	if(place === 0){
+	// 		initial = {
+	// 			player: {
+	// 				x: 2,
+	// 				y: 1
+	// 			},
+	// 			createWorld: true
+	// 		};
+	// 	} else if(place === 1){
+	// 		initial = {
+	// 			player: {
+	// 				x: 14,
+	// 				y: 1
+	// 			}
+	// 		};
+	// 	} else if(place === 2){
+	// 		initial = {
+	// 			player: {
+	// 				x: 14,
+	// 				y: 11
+	// 			}
+	// 		};	
+	// 	} else {
+	// 		initial = {
+	// 			player: {
+	// 				x: 2,
+	// 				y: 11
+	// 			}
+	// 		};	
+	// 	}
+	// 	game(initial,name);
+	// });
+
+	game(null,name);
 });
 
-function game(){
+function game(initial,userName){
 	//CONSTANTS
 	var cols = 17;
 	var rows = 15;
 	var pixels = 40;
+	var name = userName;
 
 	//Directions
 	var LEFT=0, UP=1, RIGHT = 2, DOWN = 3;
@@ -231,7 +276,7 @@ function game(){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx + 20,a.cy - 20 + pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('UP1') === -1){
+			if(AABBIntersect(a.cx + 20,a.cy - 20 + pixels,a.cw,a.ch * 2,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('UP1') === -1){
 				player.life--;
 				break;
 			}
@@ -239,12 +284,11 @@ function game(){
 				player.life--;
 				break;
 			}
-			if(AABBIntersect(a.cx + 20,a.cy - 20 - pixels,a.cw,a.ch,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('DOWN1') === -1){
+			if(AABBIntersect(a.cx + 20,a.cy - 20 - pixels,a.cw,a.ch * 2,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf('DOWN1') === -1){
 				player.life--;
 				break;
 			}
 			if(AABBIntersect(a.cx + 20,a.cy - pixels - pixels,a.cw,a.ch * 2,b[d].cx,b[d].cy,b[d].cw,b[d].ch) && v.indexOf("DOWN1") === -1 && v.indexOf('DOWN2') === -1){
-				console.log("HERE",a,b,v);
 				player.life--;
 				break;
 			}
@@ -339,9 +383,10 @@ function game(){
 
 	var sprite = new Image();
 	sprite.src = 'img/sprite.gif';
-	function Player(x,y,src,d){
+	function Player(x,y,src,d,user){
 		this.x = x;
 		this.y = y;
+		this.user = user;
 		this.width = 34;
 		this.height = 56;
 		this.cw = this.width;
@@ -378,6 +423,12 @@ function game(){
 				this.y -= 1.2;
 				this.direction = UP;
 			}
+		};
+
+		this.update = function(data){
+			this.x = data.x;
+			this.y = data.y;
+			this.direction = data.direction;
 		};
 
 		this.moveFinish = function(direction){
@@ -667,14 +718,34 @@ function game(){
 	}
 
 	function createWalls(n,player,startingWalls){
-		for(var i = 0; i < n; i++){
+		for(var i = 0; i < startingWalls.length; i++){
+			var startwall = new Wall(startingWalls[i].x * pixels,startingWalls[i].y * pixels);
+			walls.push(startwall);
+		}
+
+		for(i = 0; i < n; i++){
 			for(var block in world){
 				var x = Math.floor(Math.random() * rows);
 				var y = Math.floor(Math.random() * cols);
-				if(
-					world.world[x + (y * cols)] === 2 && (x * pixels !== player.x || y * pixels !== player.y + 20) && (x * pixels !== player.x + pixels || y * pixels !== player.y + 20) && (x * pixels !== player.x - pixels || y * pixels !== player.y + 20) && (y * pixels !== player.y + pixels + 20 || x * pixels !== player.x) && (y * pixels !== player.y - pixels + 20 || x * pixels !== player.x)){
+				if(world.world[x + (y * cols)] === 2 && (x * pixels !== player.x || y * pixels !== player.y + 20) && (x * pixels !== player.x + pixels || y * pixels !== player.y + 20) && (x * pixels !== player.x - pixels || y * pixels !== player.y + 20) && (y * pixels !== player.y + pixels + 20 || x * pixels !== player.x) && (y * pixels !== player.y - pixels + 20 || x * pixels !== player.x)){
 					var wall = new Wall(x*pixels,y*pixels);
 					walls.push(wall);
+				}
+			}
+		}
+
+		if(player !== null && player.length > 1){
+			for(var item in walls){
+				for (var person in player){
+					if((walls[item] !== undefined) && (walls[item].x == player[person].x && walls[item].y == player[person].y)
+						|| (walls[item].x == player[person].x + pixels && walls[item].y == player[person].y)
+						|| (walls[item].x == player[person].x - pixels && walls[item].y == player[person].y)
+						|| (walls[item].x == player[person].x && walls[item].y == player[person].y + pixels)
+						|| (walls[item].x == player[person].x && walls[item].y == player[person].y - pixels) 
+						){
+						walls.splice(walls.indexOf(walls[item]),1);
+						// break;
+					}
 				}
 			}
 		}
@@ -755,23 +826,65 @@ function game(){
 	}
 
 	function init(){
-		frames = 0;
-		score = 0;
-		map = [];
-		bombs = [];
-		walls = [];
-		lastbombcreated = 0;
-		world = new World();
-		world.draw();
-		player = new Player(14 * pixels,11 * pixels + 20,'img/block.png',DOWN);
-		player.draw();
-		startingWalls = [
-			{x: 3,y: 2},
-			{x: 2,y: 3},
-			{x: 2,y: 11},
-			{x: 3,y: 12}
-		];
-		// createWalls(100,player,startingWalls);
+		if(initial){
+			frames = 0;
+			score = 0;
+			map = [];
+			bombs = [];
+			walls = [];
+			players = [];
+			lastbombcreated = 0;
+			world = new World();
+			world.draw();
+			player = new Player(initial.player.x * pixels,initial.player.y * pixels + 20,'img/block.png',DOWN,name);
+			players.push(player);
+			player.draw();
+			// bomberMan.$$socket.emit('newPlayer',player);
+			if(initial.createWorld){
+				startingWalls = [
+					{x: 2,y: 10},
+					{x: 4,y: 12},
+					{x: 2,y: 4},
+					{x: 4,y: 2},
+					{x: 12,y: 2},
+					{x: 14, y: 4},
+					{x: 14, y: 10},
+					{x: 12, y: 12}
+				];
+				possiblePlayers = [
+					{x: 2 * pixels, y: 2 * pixels},
+					{x: 14 * pixels, y: 2 * pixels},
+					{x: 14 * pixels, y: 12 * pixels},
+					{x: 2 * pixels, y: 12 * pixels}
+				];
+				createWalls(50,possiblePlayers,startingWalls);
+				console.log("INITIALIZED WALLS FOR OTHERS");
+				// bomberMan.$$socket.emit('world',walls);
+			}
+		} else {
+			//OLD INIT
+			frames = 0;
+			score = 0;
+			map = [];
+			bombs = [];
+			walls = [];
+			lastbombcreated = 0;
+			world = new World();
+			world.draw();
+			player = new Player(2 * pixels,1 * pixels + 20,'img/block.png',DOWN);
+			player.draw();
+			startingWalls = [
+				{x: 2,y: 10},
+				{x: 4,y: 12},
+				{x: 2,y: 4},
+				{x: 4,y: 2},
+				{x: 12,y: 2},
+				{x: 14, y: 4},
+				{x: 14, y: 10},
+				{x: 12, y: 12}
+			];
+			createWalls(100,player,startingWalls);
+		}
 	}
 
 	function ObjectLength(object) {
@@ -797,6 +910,7 @@ function game(){
 
 		if(frames % 2 === 0){
 			draw();
+			// bomberMan.$$socket.emit('loop',{player: player, walls: walls, bombs: bombs});
 		}
 	}
 
@@ -813,8 +927,14 @@ function game(){
 				delete bombs[a];
 			}
 		}
+		// for(var person in players){
+		// 	if(players[person] !== null && players[person].user !== player.user){
+		// 		players[person].draw();
+		// 	}
+		// }
 		player.draw();
 	}
+
 
 	function loop(){
 		update();
@@ -828,6 +948,34 @@ function game(){
 			},200);
 		}
 	}
+
+	//SOCKET STUFF
+	// bomberMan.$$socket.on('game',function(data){
+	// 	for(var player in players){
+	// 		if(data.user == players[player].user){
+	// 			players[player].update(data.playerData);
+	// 		}
+	// 	}
+	// });
+
+	// bomberMan.$$socket.on('newWorld',function(data){
+	// 	for(var wall in data){
+	// 		data[wall].x /= pixels;
+	// 		data[wall].y /= pixels;
+	// 	}
+	// 	createWalls(0,null,data);
+	// });
+
+	// bomberMan.$$socket.on('players',function(data){
+	// 	var fixedPlayers = [];
+	// 	for (var person in data){
+	// 		if(data[person] !== null){
+	// 			var player = new Player(data[person].x,data[person].y,data[person].src,data[person].direction,data[person].user);
+	// 			fixedPlayers.push(player);
+	// 		}
+	// 	}
+	// 	players = fixedPlayers;
+	// });
 
 	main();
 }
